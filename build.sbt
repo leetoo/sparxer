@@ -32,6 +32,8 @@ lazy val commonSettings = Seq(
   description   := "Submit your Apache Spark jobs via a pure REST api",
   version       := "0.0.1",
   scalaVersion  := "2.12.8",
+  
+  scalafmtOnCompile := true,
 
   scalacOptions       ++= ScalacOptions,
   resolvers           +=  Resolver.sonatypeRepo("snapshots"),
