@@ -35,7 +35,7 @@ lazy val commonSettings = Seq(
 
   scalacOptions       ++= ScalacOptions,
   resolvers           +=  Resolver.sonatypeRepo("snapshots"),
-  libraryDependencies ++= Seq(cats, catsEffect, pureConfig, scalatest)
+  libraryDependencies ++= Seq(cats, catsEffect, logback, log4cats, pureConfig, scalatest)
 )
 
 lazy val ScalacOptions = Seq(
