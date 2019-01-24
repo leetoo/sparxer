@@ -1,49 +1,59 @@
+import Dependencies._
 
 lazy val root = (project in file("."))
+  .aggregate(engine, api, messages)
+
+lazy val engine = sparxerProject("engine")
   .settings(
-    organization := "io.github.pgabara",
-    name         := "sparxer",
-    description  := "Submit your Apache Spark jobs via a pure REST api",
-    version      := "0.1",
-    scalaVersion := "2.12.8",
-    
-    libraryDependencies ++= Dependencies,
-    scalacOptions       ++= ScalacOptions
+    packageName := moduleName.value,
+    libraryDependencies ++= EngineDependencies
   )
+  .dependsOn(messages)
   .enablePlugins(JavaAppPackaging)
 
-lazy val Dependencies = {
-    val catsVersion = "1.5.0"
-    val catsEffectVersion = "1.1.0"
-    val circeVersion = "0.10.0"
-    val apacheSparkVersion = "2.4.0"
-    val scalatestVersion = "3.0.5"
+lazy val api = sparxerProject("api")
+  .settings(
+    packageName := moduleName.value,
+    libraryDependencies ++= ApiDependencies
+  )
+  .dependsOn(messages)
+  .enablePlugins(JavaAppPackaging)
 
-    Seq(
-        "org.typelevel"     %% "cats-core"      % catsVersion,
-        "org.typelevel"     %% "cats-effect"    % catsEffectVersion,
+lazy val messages = sparxerProject("messages")
 
-        "io.circe"          %% "circe-core"     % circeVersion,
-        "io.circe"          %% "circe-generic"  % circeVersion,
-        "io.circe"          %% "circe-parser"   % circeVersion,
+val ApiDependencies = Seq(
+  circeCore, circeParser, circeGeneric, http4sDSL, http4sServer)
 
-        "org.apache.spark"  %% "spark-core"     % apacheSparkVersion,
+val EngineDependencies = Seq(apacheSpark)
 
-        "org.scalatest"     %% "scalatest"      % scalatestVersion
-    )
-}
+lazy val commonSettings = Seq(
+  organization  := "io.github.pgabara",
+  name          := "sparxer",
+  description   := "Submit your Apache Spark jobs via a pure REST api",
+  version       := "0.0.1",
+  scalaVersion  := "2.12.8",
+
+  scalacOptions       ++= ScalacOptions,
+  resolvers           +=  Resolver.sonatypeRepo("snapshots"),
+  libraryDependencies ++= Seq(cats, catsEffect, pureConfig, scalatest)
+)
 
 lazy val ScalacOptions = Seq(
-    "-unchecked",
-    "-deprecation",
-    "-feature",
-    "-language:existentials",
-    "-language:higherKinds",
-    "-language:implicitConversions",
-    "-language:postfixOps",
-    "-Ywarn-dead-code",
-    "-Ywarn-infer-any",
-    "-Ywarn-unused-import",
-    "-Xfatal-warnings",
-    "-Xlint"
+  "-unchecked",
+  "-deprecation",
+  "-feature",
+  "-language:existentials",
+  "-language:higherKinds",
+  "-language:implicitConversions",
+  "-language:postfixOps",
+  "-Ywarn-dead-code",
+  "-Ywarn-infer-any",
+  "-Ywarn-unused-import",
+  "-Xfatal-warnings",
+  "-Xlint"
 )
+
+def sparxerProject(name: String) =
+  Project(name, file(name))
+    .settings(commonSettings)
+    .settings(moduleName := s"sparxer-$name")
