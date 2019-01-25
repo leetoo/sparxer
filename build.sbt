@@ -6,6 +6,7 @@ lazy val root = (project in file("."))
 lazy val engine = sparxerProject("engine")
   .settings(
     packageName := moduleName.value,
+    dockerBaseImage := "bde2020/spark-base:2.4.0-hadoop2.7",
     libraryDependencies ++= EngineDependencies
   )
   .dependsOn(messages)
@@ -26,7 +27,7 @@ val ApiDependencies = Seq(
 
 val EngineDependencies = Seq(apacheSpark)
 
-lazy val commonSettings = Seq(
+lazy val CommonSettings = Seq(
   organization  := "io.github.pgabara",
   name          := "sparxer",
   description   := "Submit your Apache Spark jobs via a pure REST api",
@@ -57,5 +58,5 @@ lazy val ScalacOptions = Seq(
 
 def sparxerProject(name: String) =
   Project(name, file(name))
-    .settings(commonSettings)
+    .settings(CommonSettings)
     .settings(moduleName := s"sparxer-$name")
